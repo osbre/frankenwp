@@ -1,10 +1,10 @@
 ARG WORDPRESS_VERSION=latest
-ARG PHP_VERSION=8.3
+ARG PHP_VERSION=8.4
 ARG USER=www-data
 
 
 
-FROM dunglas/frankenphp:latest-builder-php${PHP_VERSION} as builder
+FROM dunglas/frankenphp:builder-php${PHP_VERSION} AS builder
 
 # Copy xcaddy in the builder image
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
@@ -24,8 +24,8 @@ RUN xcaddy build \
     --with github.com/stephenmiracle/frankenwp/sidekick/middleware/cache=./cache
 
 
-FROM wordpress:$WORDPRESS_VERSION as wp
-FROM dunglas/frankenphp:latest-php${PHP_VERSION} AS base
+FROM wordpress:$WORDPRESS_VERSION AS wp
+FROM dunglas/frankenphp AS base
 
 LABEL org.opencontainers.image.title=FrankenWP
 LABEL org.opencontainers.image.description="Optimized WordPress containers to run everywhere. Built with FrankenPHP & Caddy."
@@ -37,7 +37,7 @@ LABEL org.opencontainers.image.vendor="Stephen Miracle"
 
 # Replace the official binary by the one contained your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-ENV WP_DEBUG=${DEBUG:+1}
+# ENV WP_DEBUG=${DEBUG:+1}
 ENV FORCE_HTTPS=0
 ENV PHP_INI_SCAN_DIR=$PHP_INI_DIR/conf.d
 
@@ -144,7 +144,7 @@ RUN chown -R ${USER}:${USER} /data/caddy && \
     chown -R ${USER}:${USER} /usr/src/wordpress && \
     chown -R ${USER}:${USER} /usr/local/bin/docker-entrypoint.sh
 
-USER $USER
+USER www-data
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

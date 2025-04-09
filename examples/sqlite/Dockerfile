@@ -1,6 +1,6 @@
 ARG IMAGE_VERSION=beta-1.0.0
 
-FROM stephenmiracle/frankenwp:$IMAGE_VERSION
+FROM osbre/frankenwp-php:$IMAGE_VERSION
 
 # Install SQLite
 RUN apt-get update && apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev wget
