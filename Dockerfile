@@ -144,6 +144,10 @@ RUN chown -R ${USER}:${USER} /data/caddy && \
     chown -R ${USER}:${USER} /usr/src/wordpress && \
     chown -R ${USER}:${USER} /usr/local/bin/docker-entrypoint.sh
 
+# Writeable plugins and themes directories
+RUN mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/themes && \
+    chown -R ${USER}:${USER} /var/www/html/wp-content/plugins /var/www/html/wp-content/themes
+
 USER www-data
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
